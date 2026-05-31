@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-restaurant:
+    image: postgres:15-alpine
+    container_name: db-restaurant
+    ports:
+      - "5431:5432"
+    environment:
+      POSTGRES_DB: restaurant_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d restaurant_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db-reward:
+    image: postgres:15-alpine
+    container_name: db-reward
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: reward_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d reward_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db-notification:
+    image: postgres:15-alpine
+    container_name: db-notification
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d notification_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  restaurant-service:
+    build:
+      context: .
+      dockerfile: restaurant-service/Dockerfile
+    container_name: restaurant-service
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: db-restaurant
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    depends_on:
+      db-restaurant:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  reward-service:
+    build:
+      context: .
+      dockerfile: reward-service/Dockerfile
+    container_name: reward-service
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: db-reward
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    depends_on:
+      db-reward:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      DB_HOST: db-notification
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    depends_on:
+      db-notification:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
