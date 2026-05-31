@@ -17,7 +17,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
+    host: ${RABBITMQ_HOST:213.199.42.57}
     port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USER:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
+    username: ${RABBITMQ_USER:students}
+    password: ${RABBITMQ_PASSWORD:Ut3c2026}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/}

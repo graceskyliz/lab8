@@ -75,6 +75,9 @@ services:
       DB_PASSWORD: postgres
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_VIRTUAL_HOST: "/"
     depends_on:
       db-restaurant:
         condition: service_healthy
@@ -95,6 +98,9 @@ services:
       DB_PASSWORD: postgres
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_VIRTUAL_HOST: "/"
     depends_on:
       db-reward:
         condition: service_healthy
@@ -115,6 +121,9 @@ services:
       DB_PASSWORD: postgres
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_VIRTUAL_HOST: "/"
     depends_on:
       db-notification:
         condition: service_healthy
