@@ -1,5 +1,5 @@
 # Multi-stage build
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copy parent POM and all submodule POMs
@@ -20,7 +20,7 @@ COPY notification-service/src notification-service/src
 RUN mvn package -DskipTests -pl shared-events,notification-service -am
 
 # Runtime stage
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/notification-service/target/notification-service-*.jar app.jar
 EXPOSE 8083
